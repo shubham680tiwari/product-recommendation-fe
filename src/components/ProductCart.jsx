@@ -38,7 +38,7 @@ const ProductCard = ({ product, onViewDetails, showScore = false }) => {
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
     }).format(price);
   };
 

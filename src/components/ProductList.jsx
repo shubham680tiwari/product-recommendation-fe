@@ -1,5 +1,5 @@
 import React from 'react';
-import ProductCard from './ProductCard';
+import ProductCard from './ProductCart';
 import './ProductList.css';
 
 const ProductList = ({ products, loading, error, onViewDetails, showScores = false, title = 'Products' }) => {

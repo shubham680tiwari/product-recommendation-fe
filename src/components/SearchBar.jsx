@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { Search, Sparkles, X } from 'lucide-react';
+import { Search, Sparkles, X, Zap } from 'lucide-react';
 import { productAPI } from '../services/api';
+import { debounce } from '../utils/debounce';
 import './SearchBar.css';
 
 const SearchBar = ({ onResults, onClose }) => {
   const [query, setQuery] = useState('');
-  const [searchType, setSearchType] = useState('text'); // 'text' or 'semantic'
+  const [searchType, setSearchType] = useState('hybrid'); // 'text' or 'semantic'
   const [loading, setLoading] = useState(false);
 
-  const handleSearch = async (e) => {
+  const debouncedSearch = debounce((query)=> {
+    handleSearch(query);
+  }, 500);
+
+  const handleSearch = async (query, e) => {
     e.preventDefault();
     
     if (!query.trim()) {
@@ -22,8 +27,10 @@ const SearchBar = ({ onResults, onClose }) => {
       let response;
       if (searchType === 'text') {
         response = await productAPI.search(query);
-      } else {
+      } else if (searchType === 'semantic'){
         response = await productAPI.semanticSearch(query, 20);
+      } else {
+        response = await productAPI.hybridSearch(query, 20);
       }
 
       onResults(response.data.data, searchType, query);
@@ -56,6 +63,13 @@ const SearchBar = ({ onResults, onClose }) => {
             Text Search
           </button>
           <button
+          className={`toggle-btn ${searchType === 'hybrid' ? 'active' : ''}`}
+          onClick={() => setSearchType('hybrid')}
+          >
+            <Zap size={18} />
+            Hybrid
+          </button>
+          <button
             className={`toggle-btn ${searchType === 'semantic' ? 'active' : ''}`}
             onClick={() => setSearchType('semantic')}
           >
@@ -66,10 +80,14 @@ const SearchBar = ({ onResults, onClose }) => {
 
         {/* Search Info */}
         <div className="search-info">
-          {searchType === 'text' ? (
+          {searchType === 'text' && (
             <p>🔍 Search by exact keywords in product name or description</p>
-          ) : (
+          )}
+          {searchType === 'semantic' && (
             <p>✨ AI-powered search understands meaning (e.g., "phone with stylus" finds "Galaxy with S Pen")</p>
+          )}
+          {searchType === 'hybrid' && (
+            <p>⚡ Best of both: combines exact matches with AI understanding</p>
           )}
         </div>
 
@@ -84,7 +102,12 @@ const SearchBar = ({ onResults, onClose }) => {
                 : 'e.g., premium phone with good camera...'
             }
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => 
+              {setQuery(e.target.value);
+              if(e.target.value.length > 2){
+                debouncedSearch(e.target.value);
+              }
+            }}
             autoFocus
           />
           <button

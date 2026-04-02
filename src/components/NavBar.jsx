@@ -1,7 +1,9 @@
 import { Menu, ShoppingCart, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { cartAPI } from '../services/api';
 import { useUser } from '../context/UserContext';
+import './NavBar.css'
 
 const NavBar = ({onSearchClick, onCartClick}) => {
     const { cart } = useCart;
@@ -16,7 +18,7 @@ const NavBar = ({onSearchClick, onCartClick}) => {
             </div>
 
             <div className='navbar-menu'>
-                <button className='nav-link' onClick={()=> window.location.href('/')}>
+                <button className='nav-link' onClick={()=> window.location.href = '/'}>
                     Home
                 </button>
                 <button className='nav-link' onClick={onSearchClick}>
@@ -58,4 +60,4 @@ const NavBar = ({onSearchClick, onCartClick}) => {
     );
 };
 
-export default Navbar;
+export default NavBar;

@@ -38,6 +38,9 @@ export const productAPI = {
 
     // Semantic search
     semanticSearch: (query, limit) => API.get('/products/semantic-search', {query, limit}),
+
+    // hybrid search
+    hybridSearch: (query, limit) => API.get('/products/hybrid-search', { query, limit: 20 })
 };
 
 // User API
