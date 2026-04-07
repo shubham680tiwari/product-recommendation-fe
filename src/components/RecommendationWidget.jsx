@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCart';
-import { recommendationAPI } from '../services/api';
+import { recommendationAPI, interactionAPI } from '../services/api';
 import { useUser } from '../context/UserContext';
 import './RecommendationWidget.css';
 
@@ -10,10 +10,25 @@ const RecommendationWidget = ({ type = 'user', productId = null, limit = 6 }) =>
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [interactionCount, setInteractionCount] = useState(null);
 
   useEffect(() => {
     fetchRecommendations();
+    if (type === 'user' && user?._id) {
+      fetchInteractionCount();
+    } else {
+      setInteractionCount(null);
+    }
   }, [user, productId, type]);
+
+  const fetchInteractionCount = async () => {
+    try {
+      const res = await interactionAPI.getProfile(user._id);
+      setInteractionCount(res.data?.interactionCount || 0);
+    } catch (err) {
+      setInteractionCount(null);
+    }
+  };
 
   const fetchRecommendations = async () => {
     try {
@@ -67,7 +82,7 @@ const RecommendationWidget = ({ type = 'user', productId = null, limit = 6 }) =>
         </h3>
         {type === 'user' && (
           <p className="widget-subtitle">
-            Based on your {recommendations[0]?.interactionCount || 0} interactions
+            Based on your {interactionCount !== null ? interactionCount : '...'} interactions
           </p>
         )}
       </div>

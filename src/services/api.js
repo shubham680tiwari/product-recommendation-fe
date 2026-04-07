@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: '/api',
+    baseURL: 'http://localhost:5000/api',
     headers: {
         'Content-Type': 'application/json',
     },
@@ -59,7 +59,7 @@ export const userAPI = {
 // Cart API
 export const cartAPI = {
     // Get cart
-    get: (userId) => API.get(`/caert/${userId}`),
+    get: (userId) => API.get(`/cart/${userId}`),
 
     // Add to cart
     addItem: (userId, productId, quantity=1) => API.post('/cart/add', {userId, productId, quantity}),

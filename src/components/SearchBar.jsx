@@ -9,13 +9,13 @@ const SearchBar = ({ onResults, onClose }) => {
   const [searchType, setSearchType] = useState('hybrid'); // 'text' or 'semantic'
   const [loading, setLoading] = useState(false);
 
-  const debouncedSearch = debounce((query)=> {
+  const debouncedSearch = debounce((query) => {
     handleSearch(query);
   }, 500);
 
   const handleSearch = async (query, e) => {
-    e.preventDefault();
-    
+    if (e && e.preventDefault) e.preventDefault();
+
     if (!query.trim()) {
       alert('Please enter a search query');
       return;
@@ -27,7 +27,7 @@ const SearchBar = ({ onResults, onClose }) => {
       let response;
       if (searchType === 'text') {
         response = await productAPI.search(query);
-      } else if (searchType === 'semantic'){
+      } else if (searchType === 'semantic') {
         response = await productAPI.semanticSearch(query, 20);
       } else {
         response = await productAPI.hybridSearch(query, 20);
@@ -92,7 +92,7 @@ const SearchBar = ({ onResults, onClose }) => {
         </div>
 
         {/* Search Form */}
-        <form onSubmit={handleSearch} className="search-form">
+        <form onSubmit={(e) => handleSearch(query, e)} className="search-form">
           <input
             type="text"
             className="search-input"
@@ -102,9 +102,9 @@ const SearchBar = ({ onResults, onClose }) => {
                 : 'e.g., premium phone with good camera...'
             }
             value={query}
-            onChange={(e) => 
-              {setQuery(e.target.value);
-              if(e.target.value.length > 2){
+            onChange={(e) => {
+              setQuery(e.target.value);
+              if (e.target.value.length > 2) {
                 debouncedSearch(e.target.value);
               }
             }}
