@@ -12,25 +12,17 @@ const RecommendationWidget = ({ type = 'user', productId = null, limit = 6 }) =>
   const [error, setError] = useState(null);
   const [interactionCount, setInteractionCount] = useState(null);
 
-  useEffect(() => {
-    fetchRecommendations();
-    if (type === 'user' && user?._id) {
-      fetchInteractionCount();
-    } else {
-      setInteractionCount(null);
-    }
-  }, [user, productId, type]);
-
-  const fetchInteractionCount = async () => {
+  // useCallback to memoize functions for useEffect deps
+  const fetchInteractionCount = React.useCallback(async () => {
     try {
       const res = await interactionAPI.getProfile(user._id);
       setInteractionCount(res.data?.interactionCount || 0);
     } catch (err) {
       setInteractionCount(null);
     }
-  };
+  }, [user]);
 
-  const fetchRecommendations = async () => {
+  const fetchRecommendations = React.useCallback(async () => {
     try {
       setLoading(true);
       let response;
@@ -53,7 +45,17 @@ const RecommendationWidget = ({ type = 'user', productId = null, limit = 6 }) =>
     } finally {
       setLoading(false);
     }
-  };
+  }, [type, user, productId, limit]);
+
+  useEffect(() => {
+    fetchRecommendations();
+    if (type === 'user' && user?._id) {
+      fetchInteractionCount();
+    } else {
+      setInteractionCount(null);
+    }
+  }, [user, productId, type, fetchRecommendations, fetchInteractionCount]);
+
 
   if (loading) {
     return (

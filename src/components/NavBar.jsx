@@ -1,13 +1,12 @@
 import { Menu, ShoppingCart, X } from 'lucide-react';
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
-import { cartAPI } from '../services/api';
 import { useUser } from '../context/UserContext';
 import './NavBar.css'
 
 const NavBar = ({onSearchClick, onCartClick}) => {
-    const { cart } = useCart;
-    const { user } = useUser;
+    const { cart } = useCart();
+    const { user } = useUser();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return (
         <nav className='navbar'>
@@ -35,13 +34,13 @@ const NavBar = ({onSearchClick, onCartClick}) => {
                 </div>
                 <button className='cart-button' onClick={onCartClick}>
                     <ShoppingCart size={24} />
-                    {cartAPI.totalItem > 0 && (
-                        <span className='cart-badge'>{cartAPI.totalItem}</span>
+                    {cart?.totalItems > 0 && (
+                        <span className='cart-badge'>{cart.totalItems}</span>
                     )}
                 </button>
                 <button
                 className='mobile-menu-btn'
-                onClick={()=> setMobileMenuOpen}
+                onClick={()=> setMobileMenuOpen(!mobileMenuOpen)}
                 >
                     {mobileMenuOpen ? <X size={24}/> : <Menu size={24}/>}
                 </button>

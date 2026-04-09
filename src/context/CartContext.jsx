@@ -18,21 +18,13 @@ export const CartProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Fetch cart when user changes
-  useEffect(() => {
-    if (user?._id) {
-      fetchCart();
-    }
-  }, [user]);
-
-  const fetchCart = async () => {
+  // Memoize fetchCart for useEffect deps
+  const fetchCart = React.useCallback(async () => {
     if (!user?._id) return;
-    
     try {
       setLoading(true);
       const response = await cartAPI.get(user._id);
       const cartData = response.data.data;
-      
       setCart({
         items: cartData.items || [],
         totalItems: cartData.totalItems || 0,
@@ -44,7 +36,14 @@ export const CartProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  // Fetch cart when user changes
+  useEffect(() => {
+    if (user?._id) {
+      fetchCart();
+    }
+  }, [user, fetchCart]);
 
   const addToCart = async (productId, quantity = 1) => {
     if (!user?._id) {

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X, ShoppingCart, Package, Star } from 'lucide-react';
+import { X, ShoppingCart, Package } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useUser } from '../context/UserContext';
 import { interactionAPI } from '../services/api';
